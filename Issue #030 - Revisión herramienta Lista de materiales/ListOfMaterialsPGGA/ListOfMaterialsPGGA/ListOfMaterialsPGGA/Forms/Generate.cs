@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Common;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Linq;
 using System.Security.Policy;
@@ -20,6 +22,7 @@ namespace ListOfMaterialsPGGA
     {
         const Int32 blank_color = 0xFFFFFF;
         const Int32 warning_color = 0x00FFFF;
+        const Int32 new_row_color = 0xE0A413; // #13a4e0
         const string quote = "\"";
         const int col_item = 1;
         const int col_desc = 2;
@@ -53,16 +56,6 @@ namespace ListOfMaterialsPGGA
             {
                 MessageBox.Show(ex.ToString());
             }
-            
-
-            //Excel.Application xl = new Excel.Application();
-
-            //Excel.Workbook wb = xl.Workbooks.Open(System.IO.Directory.GetCurrentDirectory() + "\\Template_2.xlsm");
-
-            //wb.SaveAs(System.IO.Directory.GetCurrentDirectory() + "\\Template.xlsm");
-
-            //wb.Close(false, false, true);
-            //xl.Quit();
 
             //this.picbox_template.Image = new Bitmap(Properties.Resources.uncheck, new Size(24, 24));
             this.picbox_save.Image = new Bitmap(Properties.Resources.uncheck, new Size(24, 24));
@@ -166,7 +159,6 @@ namespace ListOfMaterialsPGGA
             catch { }
             dgv = null;
         }
-
 
         private void bt_up_Click(object sender, EventArgs e)
         {
@@ -488,7 +480,7 @@ namespace ListOfMaterialsPGGA
                                                             //If its the first sheet, then its not highlighted
                                                             dict_comp.Add(key_comp, new Tuple<int, Int32>(Int32.Parse((objxls.worksheet.Cells[i, n_quantity] as Excel.Range).Text.ToString()), blank_color));
                                                         } else {
-                                                            dict_comp.Add(key_comp, new Tuple<int, Int32>(Int32.Parse((objxls.worksheet.Cells[i, n_quantity] as Excel.Range).Text.ToString()), warning_color));
+                                                            dict_comp.Add(key_comp, new Tuple<int, Int32>(Int32.Parse((objxls.worksheet.Cells[i, n_quantity] as Excel.Range).Text.ToString()), new_row_color));
                                                         }
                                                     }
                                                     catch (Exception exc) { string error = exc.ToString(); }
@@ -531,6 +523,11 @@ namespace ListOfMaterialsPGGA
                                             //objxls.worksheet.get_Range(objxls.worksheet.Cells[n_row, 11], objxls.worksheet.Cells[n_row, 11]).Interior.Color = entry.Value.Item2;
                                             objxls.worksheet.get_Range(objxls.worksheet.Cells[n_row, 11], objxls.worksheet.Cells[n_row, 11]).Interior.Color = entry.Value.Item2;
 
+                                            if(entry.Value.Item2 == new_row_color)
+                                            {
+                                                objxls.worksheet.get_Range(objxls.worksheet.Cells[n_row, 1], objxls.worksheet.Cells[n_row, 11]).Interior.Color = entry.Value.Item2;
+                                            }
+
                                             n_row++;
                                         }
 
@@ -563,37 +560,47 @@ namespace ListOfMaterialsPGGA
 
                                     objxls.worksheet.Cells[3, 11] = "QUANTITY";
                                     objxls.worksheet.Cells[3, 12] = "Agregar a reporte HW/SW";
-                                    objxls.worksheet.Cells[3, 13] = "Comentarios/Seguimiento";
+                                    objxls.worksheet.Cells[3, 13] = "Agregar a Repuestos";
+                                    objxls.worksheet.Cells[3, 14] = "Agregar a Sueltos";
+                                    objxls.worksheet.Cells[3, 15] = "Comentarios/Seguimiento";
 
-                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 12], objxls.worksheet.Cells[3, 13]).Font.Color = Excel.XlRgbColor.rgbWhite;
-                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 12], objxls.worksheet.Cells[3, 13]).Font.Bold = true;
+                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 12], objxls.worksheet.Cells[3, 15]).Font.Color = Excel.XlRgbColor.rgbWhite;
+                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 12], objxls.worksheet.Cells[3, 15]).Font.Bold = true;
 
-                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 12], objxls.worksheet.Cells[3, 13]).Interior.Color = 0x808080;
+                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 12], objxls.worksheet.Cells[3, 15]).Interior.Color = 0x808080;
 
                                     objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 8], objxls.worksheet.Cells[3, 8]).Font.Color = Excel.XlRgbColor.rgbBlack;
                                     objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 11], objxls.worksheet.Cells[3, 11]).Font.Color = Excel.XlRgbColor.rgbBlack;
 
-                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 8], objxls.worksheet.Cells[200, 13]).HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
-                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 8], objxls.worksheet.Cells[200, 13]).VerticalAlignment = Microsoft.Office.Interop.Excel.XlVAlign.xlVAlignCenter;
+                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 8], objxls.worksheet.Cells[200, 15]).HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
+                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 8], objxls.worksheet.Cells[200, 15]).VerticalAlignment = Microsoft.Office.Interop.Excel.XlVAlign.xlVAlignCenter;
+
+                                    int count_rows = 3; 
 
                                     for (int p = 3; p < 200; p++)
                                     {
-                                        if ("" != objxls.worksheet.Cells[p,1].ToString())
+                                        //if(objxls.worksheet.)
+                                        if (((objxls.worksheet.Cells[p, 1] as Excel.Range).Value) == null)
                                         {
-                                            if (warning_color != Convert.ToInt32(objxls.worksheet.get_Range(objxls.worksheet.Cells[p, 11], objxls.worksheet.Cells[p, 11]).Interior.Color))
+                                            break;
+                                        }
+                                        else 
+                                        {
+                                            count_rows = p;
+                                            if ((warning_color != Convert.ToInt32(objxls.worksheet.get_Range(objxls.worksheet.Cells[p, 11], objxls.worksheet.Cells[p, 11]).Interior.Color)) &&
+                                                (new_row_color != Convert.ToInt32(objxls.worksheet.get_Range(objxls.worksheet.Cells[p, 11], objxls.worksheet.Cells[p, 11]).Interior.Color)))
                                             {
                                                 objxls.worksheet.get_Range(objxls.worksheet.Cells[p, 11], objxls.worksheet.Cells[p, 11]).Interior.Color = 0xC07000;
                                             }
 
                                             //Agrega los colores respectivos
-                                            objxls.worksheet.get_Range(objxls.worksheet.Cells[p, 8], objxls.worksheet.Cells[p, 8]).Interior.Color = 0xC07000;
-                                            objxls.worksheet.get_Range(objxls.worksheet.Cells[p, 9], objxls.worksheet.Cells[p, 10]).Interior.Color = 0x00C0FF;
 
-                                            if(p != 3)
+                                            if (p != 3)
                                             {
                                                 if (!sht_dup)
                                                 { //copia las cantidades si es que no fue duplicado.
                                                     objxls.worksheet.Cells[p, 11] = objxls.worksheet.Cells[p, 8];
+                                                    objxls.worksheet.Cells[p, 15] = objxls.worksheet.Cells[p, 12];
 
                                                     System.Threading.Thread.Sleep(10);
 
@@ -605,27 +612,24 @@ namespace ListOfMaterialsPGGA
                                                 objxls.worksheet.Cells[p, 8] = "L";
 
                                                 objxls.worksheet.Cells[p, 12] = "TRUE";
+
+                                                objxls.worksheet.Columns.AutoFit();
+
+                                                //Excel.Range range = objxls.worksheet.Range;
+                                                //Excel.Range cell = range.Cells[p, 15];
+                                                //Excel.Borders border = cell.Borders;
+
+                                                //border.LineStyle = Excel.XlLineStyle.xlContinuous;
+                                                //border.Weight = 2d;
                                             }
+
+                                            ((Range)objxls.worksheet.Cells[100, 15]).Borders[Excel.XlBordersIndex.xlEdgeLeft].LineStyle = Excel.XlLineStyle.xlContinuous;
+                                            ((Range)objxls.worksheet.Cells[100, 15]).Borders[Excel.XlBordersIndex.xlEdgeLeft].Weight = 3d;
                                         }
                                     }
-                                    //objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 11], objxls.worksheet.Cells[200, 11]).Interior.Color = 0xC07000; //0x0070C0                                                                                                                       
 
-                                    //for (int i = 4; i < 200; i++)
-                                    //{
-                                    //    if(!sht_dup) { //copia las cantidades si es que no fue duplicado.
-                                    //        objxls.worksheet.Cells[i, 11] = objxls.worksheet.Cells[i, 8];
-
-                                    //        System.Threading.Thread.Sleep(10);
-                                            
-                                    //    }
-
-                                    //    objxls.worksheet.Cells[i, 9] = objxls.worksheet.Cells[i, 7];
-
-                                    //    objxls.worksheet.Cells[i, 10] = "";
-                                    //    objxls.worksheet.Cells[i, 8] = "L";
-
-                                    //    objxls.worksheet.Cells[i, 12] = "TRUE";
-                                    //}
+                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 8], objxls.worksheet.Cells[count_rows, 8]).Interior.Color = 0xC07000;
+                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 9], objxls.worksheet.Cells[count_rows, 10]).Interior.Color = 0x00C0FF;
 
                                     try
                                     {
@@ -702,7 +706,7 @@ namespace ListOfMaterialsPGGA
                                                     {
                                                         if (dict_comp[key_comp].Item1 != Int32.Parse((objxls.worksheet.Cells[i, n_quantity] as Excel.Range).Text.ToString()))
                                                         {
-                                                            dict_comp[key_comp] = new Tuple<int, Int32> (Int32.Parse((objxls.worksheet.Cells[i, n_quantity] as Excel.Range).Text.ToString()), warning_color);
+                                                            dict_comp[key_comp] = new Tuple<int, Int32> (Int32.Parse((objxls.worksheet.Cells[i, n_quantity] as Excel.Range).Text.ToString()), new_row_color);
 
                                                             //objxls.worksheet.get_Range(objxls.worksheet.Cells[i, n_quantity], objxls.worksheet.Cells[i, n_quantity]).Interior.Color = warning_color;
                                                             objxls.worksheet.get_Range(objxls.worksheet.Cells[i, 1], objxls.worksheet.Cells[i, 1]).Interior.Color = warning_color;
@@ -730,7 +734,12 @@ namespace ListOfMaterialsPGGA
 
                                             objxls.worksheet.Cells[n_row, 11] = entry.Value.Item1;
                                             //objxls.worksheet.get_Range(objxls.worksheet.Cells[n_row, 11], objxls.worksheet.Cells[n_row, 11]).Interior.Color = entry.Value.Item2;
-                                            objxls.worksheet.get_Range(objxls.worksheet.Cells[n_row, 1], objxls.worksheet.Cells[n_row, 1]).Interior.Color = entry.Value.Item2;
+                                            objxls.worksheet.get_Range(objxls.worksheet.Cells[n_row, 11], objxls.worksheet.Cells[n_row, 11]).Interior.Color = entry.Value.Item2;
+
+                                            if(entry.Value.Item2 == new_row_color)
+                                            {
+                                                objxls.worksheet.get_Range(objxls.worksheet.Cells[n_row, 1], objxls.worksheet.Cells[n_row, 11]).Interior.Color = entry.Value.Item2;
+                                            }
 
                                             n_row++;
                                         }
