@@ -611,7 +611,11 @@ namespace ListOfMaterialsPGGA
                                                 objxls.worksheet.Cells[p, 10] = "";
                                                 objxls.worksheet.Cells[p, 8] = "L";
 
-                                                objxls.worksheet.Cells[p, 12] = "TRUE";
+                                                objxls.worksheet.Cells[p, 12] = ('\u2713').ToString();
+                                                objxls.worksheet.Cells[p, 13] = ('\u2713').ToString();
+                                                objxls.worksheet.Cells[p, 14] = ('\u2713').ToString();
+
+                                                //Char('HD7')"\uHD7";
 
                                                 objxls.worksheet.Columns.AutoFit();
 
@@ -623,11 +627,24 @@ namespace ListOfMaterialsPGGA
                                                 //border.Weight = 2d;
                                             }
 
-                                            ((Range)objxls.worksheet.Cells[100, 15]).Borders[Excel.XlBordersIndex.xlEdgeLeft].LineStyle = Excel.XlLineStyle.xlContinuous;
-                                            ((Range)objxls.worksheet.Cells[100, 15]).Borders[Excel.XlBordersIndex.xlEdgeLeft].Weight = 3d;
+                                            //((Range)objxls.worksheet.Cells[100, 15]).Borders[Excel.XlBordersIndex.xlEdgeLeft].LineStyle = Excel.XlLineStyle.xlContinuous;
+                                            //((Range)objxls.worksheet.Cells[100, 15]).Borders[Excel.XlBordersIndex.xlEdgeLeft].Weight = 3d;
+                                            //((Range) objxls.worksheet.get_Range(objxls.worksheet.Cells[7, 76], objxls.worksheet.Cells[11, 94]))
+                                            
+                                            //objxls.worksheet.getRange("G76:K94");
                                         }
                                     }
 
+                                    ((Range)objxls.worksheet.get_Range("A3:O44")).Cells.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
+                                    ((Range)objxls.worksheet.get_Range("A3:O44")).Cells.Borders[Excel.XlBordersIndex.xlEdgeLeft].Weight = 2d;
+                                    ((Range)objxls.worksheet.get_Range("A3:O44")).Cells.Borders[Excel.XlBordersIndex.xlEdgeRight].Weight = 2d;
+                                    ((Range)objxls.worksheet.get_Range("A4:O44")).Cells.Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = 3d;
+                                    ((Range)objxls.worksheet.get_Range("A3:O44")).Cells.Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = 3d;
+                                    ((Range)objxls.worksheet.get_Range("A3:O3")).Cells.Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = 2d;
+
+                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[4, 12], objxls.worksheet.Cells[count_rows, 14]).Font.Bold = true;
+                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[4, 12], objxls.worksheet.Cells[count_rows, 14]).Font.Size = 14;
+                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[4, 12], objxls.worksheet.Cells[count_rows, 14]).Font.Color = 0x1f8a13; //#138a1f
                                     objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 8], objxls.worksheet.Cells[count_rows, 8]).Interior.Color = 0xC07000;
                                     objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 9], objxls.worksheet.Cells[count_rows, 10]).Interior.Color = 0x00C0FF;
 
