@@ -391,8 +391,6 @@ namespace ListOfMaterialsPGGA
                 objxls.CloseXLS();
                 objxls.ReleaseWithoutCloseXLS(); 
                 objxls = null;
-                //this.st_label.Text = "Problema al intentar guardar el archivo.";
-                //this.mensaje.Update();
                 MessageBox.Show(this.st_label.Text);
                 return;
             }
@@ -409,19 +407,20 @@ namespace ListOfMaterialsPGGA
             int count = 0;
             try
             {
-
                 foreach (var item in this.dataGridView1.Rows)
                 {
-
                     filedir = (string)((DataGridViewRow)item).Cells[1].Value;
                     objxls.bookmem = objxls.app.Workbooks.Open(filedir, 0, false, 5, "", "", true, Excel.XlPlatform.xlWindows, "\t", true, false, 0, true, 1, 0);
+
                     if (objxls.bookmem != null)
                     {
                         tempname = (string)((DataGridViewRow)item).Cells[0].Value;
-                        try {
+                        try
+                        {
                             tempname = tempname.Substring(0, 28);
                         }     //Para nombres de archivos tipo Q
-                        catch {
+                        catch
+                        {
                         }
                         tempname = tempname.Replace(".", "-");
 
@@ -430,7 +429,8 @@ namespace ListOfMaterialsPGGA
                             Dictionary<string, Tuple<int, Int32>> dict_comp = new Dictionary<string, Tuple<int, Int32>>();
                             bool sht_dup = false;
 
-                            if (wksht.Name == "BoMList")
+                            if ((wksht.Name != "Cover page") && (wksht.Name != "BoMListMechanical") && (wksht.Name != "CaratulaABB") && (wksht.Name != "Total")
+                                && (wksht.Name != "ComponentData") && (wksht.Name != "Referencia") && (wksht.Name != "Lista de Repuestos") && (wksht.Name != "Lista de Sueltos"))
                             {
                                 objxls.sheetmem = wksht;
                                 if (objxls.sheetmem != null)
@@ -439,348 +439,29 @@ namespace ListOfMaterialsPGGA
                                     this.st_label.Text = "Copiando " + count + "/" + this.dataGridView1.RowCount + " ...";
                                     this.mensaje.Update();
 
-                                    if (objxls.SelectSheet(tempname)) //significa que hay que acoplar los números
+                                    if(((wksht.Name == "BoMList") && (objxls.SelectSheet(tempname))) || (objxls.SelectSheet(wksht.Name)))
                                     {
-
                                         sht_dup = true;
                                         objxls.SelectSheet(tempname);
                                         objxls.worksheet.Name = "Duplicate";
 
                                         objxls.sheetmem.Copy(Type.Missing, (objxls.worksheet)); //copiamos el sheet
-                                        objxls.SelectSheet("BoMList");
-                                        objxls.worksheet.Name = tempname;
+
+                                        if(wksht.Name == "BoMList")
+                                        {
+                                            objxls.SelectSheet(wksht.Name);
+                                            objxls.worksheet.Name = tempname;
+                                        }
 
                                         objxls.SelectSheet("Duplicate");
 
                                         List<string> sheets = new List<string> { "Duplicate", tempname };
-
-                                        foreach(string sht in sheets)
-                                        {
-                                            objxls.SelectSheet(sht);
-
-                                            int n_quantity = 0;
-
-                                            if (((objxls.worksheet.Cells[3, 11] as Excel.Range).Text.ToString()) == "QUANTITY") n_quantity = 11;
-                                            else n_quantity = 8;
-
-                                            for (int i = 4; i < 60; i++)
-                                            {
-                                                string key_comp = "";
-
-                                                for (int j = 2; j < 8; j++) //esto lo que hace es crear el identificador en base a las primeras 6 columnas
-                                                {
-                                                    key_comp += (objxls.worksheet.Cells[i, j] as Excel.Range).Text.ToString() + ";";
-                                                }
-
-                                                if (!dict_comp.ContainsKey(key_comp))
-                                                {
-                                                    try
-                                                    {
-                                                        if(sht == "Duplicate") {
-                                                            //If its the first sheet, then its not highlighted
-                                                            dict_comp.Add(key_comp, new Tuple<int, Int32>(Int32.Parse((objxls.worksheet.Cells[i, n_quantity] as Excel.Range).Text.ToString()), blank_color));
-                                                        } else {
-                                                            dict_comp.Add(key_comp, new Tuple<int, Int32>(Int32.Parse((objxls.worksheet.Cells[i, n_quantity] as Excel.Range).Text.ToString()), new_row_color));
-                                                        }
-                                                    }
-                                                    catch (Exception exc) { string error = exc.ToString(); }
-                                                }
-                                                else
-                                                {
-                                                    try
-                                                    {
-                                                        //If the value is different to the one already in the dictionary => have to highlight it
-                                                        if (dict_comp[key_comp].Item1 != Int32.Parse((objxls.worksheet.Cells[i, n_quantity] as Excel.Range).Text.ToString()))
-                                                        {
-                                                            //Simply changing the value of the number of items available
-                                                            dict_comp[key_comp] = new Tuple<int, Int32>(Int32.Parse((objxls.worksheet.Cells[i, n_quantity] as Excel.Range).Text.ToString()), warning_color);
-                                                            //dict_comp[key_comp].Item1 = Int32.Parse((objxls.worksheet.Cells[i, n_quantity] as Excel.Range).Text.ToString());
-
-                                                            objxls.SelectSheet(tempname);
-                                                        }
-                                                    }
-                                                    catch (Exception exc) { string error = exc.ToString(); }
-                                                }
-                                            }
-                                        }
-
-                                        objxls.SelectSheet(tempname);
-
-                                        int n_row = 4;
-
-                                        foreach (KeyValuePair<string, Tuple<int, Int32>> entry in dict_comp)
-                                        {
-                                            string[] descriptions = entry.Key.Split(';');
-
-                                            objxls.worksheet.Cells[n_row, 1] = n_row-3;
-
-                                            for (int j = 2; j <= 8; j++) //pasting all the values of the descriptions
-                                            {
-                                                objxls.worksheet.Cells[n_row, j] = descriptions[j-2];
-                                            }
-
-                                            objxls.worksheet.Cells[n_row, 11] = entry.Value.Item1; //pasting the value of the quantity
-                                            //objxls.worksheet.get_Range(objxls.worksheet.Cells[n_row, 11], objxls.worksheet.Cells[n_row, 11]).Interior.Color = entry.Value.Item2;
-                                            objxls.worksheet.get_Range(objxls.worksheet.Cells[n_row, 11], objxls.worksheet.Cells[n_row, 11]).Interior.Color = entry.Value.Item2;
-
-                                            if(entry.Value.Item2 == new_row_color)
-                                            {
-                                                objxls.worksheet.get_Range(objxls.worksheet.Cells[n_row, 1], objxls.worksheet.Cells[n_row, 11]).Interior.Color = entry.Value.Item2;
-                                            }
-
-                                            n_row++;
-                                        }
-
-                                        for (int i = objxls.workbook.Worksheets.Count; i > 0; i--) //busca y borra la hoja 'Duplicate'
-                                        {
-                                            Worksheet wkSheet = (Worksheet)objxls.workbook.Worksheets[i];
-                                            if (wkSheet.Name == "Duplicate")
-                                            {
-                                                objxls.app.DisplayAlerts = false;
-                                                wkSheet.Delete();
-                                                objxls.app.DisplayAlerts = true;
-                                            }
-                                        }
-
-                                    } else {
-                                        objxls.sheetmem.Copy(Type.Missing, (objxls.worksheet));
-                                        objxls.SelectSheet("BoMList");
-
-                                        objxls.worksheet.Name = tempname;
-
                                     }
 
-                                    objxls.SelectSheet(tempname);
 
-                                    //Nombra los headers
-                                    objxls.worksheet.Cells[1, 4] = "Cantidad";
-                                    objxls.worksheet.Cells[3, 8] = "ICT";
-                                    objxls.worksheet.Cells[3, 9] = "SAP ID";
-                                    objxls.worksheet.Cells[3, 10] = "";
-
-                                    objxls.worksheet.Cells[3, 11] = "QUANTITY";
-                                    objxls.worksheet.Cells[3, 12] = "Agregar a reporte HW/SW";
-                                    objxls.worksheet.Cells[3, 13] = "Agregar a Repuestos";
-                                    objxls.worksheet.Cells[3, 14] = "Agregar a Sueltos";
-                                    objxls.worksheet.Cells[3, 15] = "Comentarios/Seguimiento";
-
-                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 12], objxls.worksheet.Cells[3, 15]).Font.Color = Excel.XlRgbColor.rgbWhite;
-                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 12], objxls.worksheet.Cells[3, 15]).Font.Bold = true;
-
-                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 12], objxls.worksheet.Cells[3, 15]).Interior.Color = 0x808080;
-
-                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 8], objxls.worksheet.Cells[3, 8]).Font.Color = Excel.XlRgbColor.rgbBlack;
-                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 11], objxls.worksheet.Cells[3, 11]).Font.Color = Excel.XlRgbColor.rgbBlack;
-
-                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 8], objxls.worksheet.Cells[200, 15]).HorizontalAlignment = Microsoft.Office.Interop.Excel.XlHAlign.xlHAlignCenter;
-                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 8], objxls.worksheet.Cells[200, 15]).VerticalAlignment = Microsoft.Office.Interop.Excel.XlVAlign.xlVAlignCenter;
-
-                                    int count_rows = 3; 
-
-                                    for (int p = 3; p < 200; p++)
-                                    {
-                                        //if(objxls.worksheet.)
-                                        if (((objxls.worksheet.Cells[p, 1] as Excel.Range).Value) == null)
-                                        {
-                                            break;
-                                        }
-                                        else 
-                                        {
-                                            count_rows = p;
-                                            if ((warning_color != Convert.ToInt32(objxls.worksheet.get_Range(objxls.worksheet.Cells[p, 11], objxls.worksheet.Cells[p, 11]).Interior.Color)) &&
-                                                (new_row_color != Convert.ToInt32(objxls.worksheet.get_Range(objxls.worksheet.Cells[p, 11], objxls.worksheet.Cells[p, 11]).Interior.Color)))
-                                            {
-                                                objxls.worksheet.get_Range(objxls.worksheet.Cells[p, 11], objxls.worksheet.Cells[p, 11]).Interior.Color = 0xC07000;
-                                            }
-
-                                            //Agrega los colores respectivos
-
-                                            if (p != 3)
-                                            {
-                                                if (!sht_dup)
-                                                { //copia las cantidades si es que no fue duplicado.
-                                                    objxls.worksheet.Cells[p, 11] = objxls.worksheet.Cells[p, 8];
-                                                    objxls.worksheet.Cells[p, 15] = objxls.worksheet.Cells[p, 12];
-
-                                                    System.Threading.Thread.Sleep(10);
-
-                                                }
-
-                                                objxls.worksheet.Cells[p, 9] = objxls.worksheet.Cells[p, 7];
-
-                                                objxls.worksheet.Cells[p, 10] = "";
-                                                objxls.worksheet.Cells[p, 8] = "L";
-
-                                                objxls.worksheet.Cells[p, 12] = ('\u2713').ToString();
-                                                objxls.worksheet.Cells[p, 13] = ('\u2713').ToString();
-                                                objxls.worksheet.Cells[p, 14] = ('\u2713').ToString();
-
-                                                //Char('HD7')"\uHD7";
-
-                                                objxls.worksheet.Columns.AutoFit();
-
-                                                //Excel.Range range = objxls.worksheet.Range;
-                                                //Excel.Range cell = range.Cells[p, 15];
-                                                //Excel.Borders border = cell.Borders;
-
-                                                //border.LineStyle = Excel.XlLineStyle.xlContinuous;
-                                                //border.Weight = 2d;
-                                            }
-
-                                            //((Range)objxls.worksheet.Cells[100, 15]).Borders[Excel.XlBordersIndex.xlEdgeLeft].LineStyle = Excel.XlLineStyle.xlContinuous;
-                                            //((Range)objxls.worksheet.Cells[100, 15]).Borders[Excel.XlBordersIndex.xlEdgeLeft].Weight = 3d;
-                                            //((Range) objxls.worksheet.get_Range(objxls.worksheet.Cells[7, 76], objxls.worksheet.Cells[11, 94]))
-                                            
-                                            //objxls.worksheet.getRange("G76:K94");
-                                        }
-                                    }
-
-                                    ((Range)objxls.worksheet.get_Range("A3:O44")).Cells.Borders.LineStyle = Excel.XlLineStyle.xlContinuous;
-                                    ((Range)objxls.worksheet.get_Range("A3:O44")).Cells.Borders[Excel.XlBordersIndex.xlEdgeLeft].Weight = 2d;
-                                    ((Range)objxls.worksheet.get_Range("A3:O44")).Cells.Borders[Excel.XlBordersIndex.xlEdgeRight].Weight = 2d;
-                                    ((Range)objxls.worksheet.get_Range("A4:O44")).Cells.Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = 3d;
-                                    ((Range)objxls.worksheet.get_Range("A3:O44")).Cells.Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = 3d;
-                                    ((Range)objxls.worksheet.get_Range("A3:O3")).Cells.Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = 2d;
-
-                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[4, 12], objxls.worksheet.Cells[count_rows, 14]).Font.Bold = true;
-                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[4, 12], objxls.worksheet.Cells[count_rows, 14]).Font.Size = 14;
-                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[4, 12], objxls.worksheet.Cells[count_rows, 14]).Font.Color = 0x1f8a13; //#138a1f
-                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 8], objxls.worksheet.Cells[count_rows, 8]).Interior.Color = 0xC07000;
-                                    objxls.worksheet.get_Range(objxls.worksheet.Cells[3, 9], objxls.worksheet.Cells[count_rows, 10]).Interior.Color = 0x00C0FF;
-
-                                    try
-                                    {
-                                        objxls.worksheet.Cells[1, 5] = ((DataGridViewRow)item).Cells[2].Value;
-                                    }
-                                    catch
-                                    {
-                                        objxls.worksheet.Cells[1, 5] = 1;
-                                    }
-
-                                    if (Convert.ToString((objxls.worksheet.Cells[3, 6] as Excel.Range).Text) == "ArticleNumber")
-                                    {
-                                        (objxls.worksheet.Cells[1, 6] as Excel.Range).EntireColumn.Delete(Excel.XlDeleteShiftDirection.xlShiftToLeft);
-                                    }
-
-                                    break;
-                                }
-                            }
-                            //acá se fija si es del otro tipo de formato de workbook
-                            else if ((wksht.Name != "Cover page") && (wksht.Name != "BoMListMechanical") && (wksht.Name != "CaratulaABB") && (wksht.Name != "Total") 
-                                && (wksht.Name != "ComponentData") && (wksht.Name != "Referencia"))
-                            {
-                                objxls.sheetmem = wksht;
-                                if (objxls.sheetmem != null)
-                                {
-                                    count++;
-                                    this.st_label.Text = "Copiando " + count + "/" + this.dataGridView1.RowCount + " ...";
-                                    this.mensaje.Update();
-                                    
-                                    if (objxls.SelectSheet(tempname))
-                                    {
-                                        objxls.SelectSheet(tempname);
-                                        objxls.worksheet.Name = "Duplicate";
-                                        objxls.sheetmem.Copy(Type.Missing, (objxls.worksheet));
-                                        objxls.SelectSheet("Duplicate");
-
-                                        List<string> sheets = new List<string> { "Duplicate", tempname };
-                                        //Dictionary<string, int> dict_comp = new Dictionary<string, int>();
-
-                                        foreach (string sht in sheets)
-                                        {
-                                            int n_quantity = 0;
-                                            if (((objxls.worksheet.Cells[3, 11] as Excel.Range).Text.ToString()) == "QUANTITY") n_quantity = 11;
-                                            else n_quantity = 8;
-
-                                            objxls.SelectSheet(sht);
-
-                                            for (int i = 4; i < 60; i++)
-                                            {
-                                                string key_comp = "";
-
-                                                for (int j = 2; j < 8; j++)
-                                                {
-                                                    key_comp += (objxls.worksheet.Cells[i, j] as Excel.Range).Text.ToString() + ";";
-                                                }
-
-                                                if (!dict_comp.ContainsKey(key_comp))
-                                                {
-                                                    try
-                                                    {
-                                                        if(sht == "Duplicate")
-                                                        {
-                                                            dict_comp.Add(key_comp, new Tuple<int, Int32>(Int32.Parse((objxls.worksheet.Cells[i, n_quantity] as Excel.Range).Text.ToString()), blank_color));
-                                                        } else
-                                                        {
-                                                            dict_comp.Add(key_comp, new Tuple<int, Int32>(Int32.Parse((objxls.worksheet.Cells[i, n_quantity] as Excel.Range).Text.ToString()), warning_color));
-                                                        }
-                                                    }
-                                                    catch (Exception exc) { string error = exc.ToString(); }
-                                                }
-                                                else
-                                                {
-                                                    try
-                                                    {
-                                                        if (dict_comp[key_comp].Item1 != Int32.Parse((objxls.worksheet.Cells[i, n_quantity] as Excel.Range).Text.ToString()))
-                                                        {
-                                                            dict_comp[key_comp] = new Tuple<int, Int32> (Int32.Parse((objxls.worksheet.Cells[i, n_quantity] as Excel.Range).Text.ToString()), new_row_color);
-
-                                                            //objxls.worksheet.get_Range(objxls.worksheet.Cells[i, n_quantity], objxls.worksheet.Cells[i, n_quantity]).Interior.Color = warning_color;
-                                                            objxls.worksheet.get_Range(objxls.worksheet.Cells[i, 1], objxls.worksheet.Cells[i, 1]).Interior.Color = warning_color;
-                                                        }
-                                                    }
-                                                    catch (Exception exc) { string error = exc.ToString(); }
-                                                }
-                                            }
-                                        }
-
-                                        objxls.SelectSheet(tempname);
-
-                                        int n_row = 4;
-
-                                        foreach (KeyValuePair<string, Tuple<int, Int32>> entry in dict_comp)
-                                        {
-                                            string[] descriptions = entry.Key.Split(';');
-
-                                            objxls.worksheet.Cells[n_row, 1] = n_row - 3;
-
-                                            for (int j = 2; j < 8; j++)
-                                            {
-                                                objxls.worksheet.Cells[n_row, j] = descriptions[j - 2];
-                                            }
-
-                                            objxls.worksheet.Cells[n_row, 11] = entry.Value.Item1;
-                                            //objxls.worksheet.get_Range(objxls.worksheet.Cells[n_row, 11], objxls.worksheet.Cells[n_row, 11]).Interior.Color = entry.Value.Item2;
-                                            objxls.worksheet.get_Range(objxls.worksheet.Cells[n_row, 11], objxls.worksheet.Cells[n_row, 11]).Interior.Color = entry.Value.Item2;
-
-                                            if(entry.Value.Item2 == new_row_color)
-                                            {
-                                                objxls.worksheet.get_Range(objxls.worksheet.Cells[n_row, 1], objxls.worksheet.Cells[n_row, 11]).Interior.Color = entry.Value.Item2;
-                                            }
-
-                                            n_row++;
-                                        }
-
-                                        for (int i = objxls.workbook.Worksheets.Count; i > 0; i--)
-                                        {
-                                            Worksheet wkSheet = (Worksheet)objxls.workbook.Worksheets[i];
-                                            if (wkSheet.Name == "Duplicate")
-                                            {
-                                                objxls.app.DisplayAlerts = false;
-                                                wkSheet.Delete();
-                                                objxls.app.DisplayAlerts = true;
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        objxls.sheetmem.Copy(Type.Missing, (objxls.worksheet));
-                                        objxls.SelectSheet(wksht.Name);
-                                    }
                                 }
                             }
                         }
-                        objxls.bookmem.Close(false, false, true);
                     }
                 }
             }
