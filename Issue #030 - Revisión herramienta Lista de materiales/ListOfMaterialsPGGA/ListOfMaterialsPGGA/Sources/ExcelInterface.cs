@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
 using Microsoft.Office.Interop.Excel;
+using System.Windows.Forms;
 //using System.Collections.Concurrent;
 
 namespace Interface.ExcelTools
@@ -648,7 +649,17 @@ namespace Interface.ExcelTools
 
         public void SelectSheet2(string shtname)
         {
-            this.worksheet = (Excel.Worksheet)app.Worksheets[shtname.ToString()];
+            MessageBox.Show("Sheet name is: " + shtname);
+
+            try
+            {
+                this.worksheet = (Excel.Worksheet)app.Worksheets[shtname.ToString()];
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Exception is: " + e.ToString());
+            }
+            
         }
 
         public string getCell(string sheet, string row, string col)

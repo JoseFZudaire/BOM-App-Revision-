@@ -56,8 +56,6 @@
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.label6 = new System.Windows.Forms.Label();
             this.tb_template = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.mensaje.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.picbox_save)).BeginInit();
@@ -192,7 +190,7 @@
             // bt_generate
             // 
             this.bt_generate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.bt_generate.Location = new System.Drawing.Point(88, 381);
+            this.bt_generate.Location = new System.Drawing.Point(88, 384);
             this.bt_generate.Margin = new System.Windows.Forms.Padding(2);
             this.bt_generate.Name = "bt_generate";
             this.bt_generate.Size = new System.Drawing.Size(156, 30);
@@ -204,7 +202,7 @@
             // bt_save
             // 
             this.bt_save.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.bt_save.Location = new System.Drawing.Point(88, 316);
+            this.bt_save.Location = new System.Drawing.Point(88, 319);
             this.bt_save.Margin = new System.Windows.Forms.Padding(2);
             this.bt_save.Name = "bt_save";
             this.bt_save.Size = new System.Drawing.Size(161, 24);
@@ -217,7 +215,7 @@
             // 
             this.tb_save.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tb_save.Location = new System.Drawing.Point(334, 344);
+            this.tb_save.Location = new System.Drawing.Point(334, 347);
             this.tb_save.Margin = new System.Windows.Forms.Padding(2);
             this.tb_save.Name = "tb_save";
             this.tb_save.Size = new System.Drawing.Size(571, 20);
@@ -228,7 +226,7 @@
             // 
             this.lb_save.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lb_save.AutoSize = true;
-            this.lb_save.Location = new System.Drawing.Point(85, 347);
+            this.lb_save.Location = new System.Drawing.Point(85, 350);
             this.lb_save.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lb_save.Name = "lb_save";
             this.lb_save.Size = new System.Drawing.Size(242, 13);
@@ -241,7 +239,7 @@
             this.mensaje.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.st_label,
             this.toolStripStatusLabel1});
-            this.mensaje.Location = new System.Drawing.Point(0, 458);
+            this.mensaje.Location = new System.Drawing.Point(0, 422);
             this.mensaje.Name = "mensaje";
             this.mensaje.Padding = new System.Windows.Forms.Padding(1, 0, 10, 0);
             this.mensaje.Size = new System.Drawing.Size(944, 22);
@@ -261,7 +259,7 @@
             // 
             this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(248, 390);
+            this.label2.Location = new System.Drawing.Point(248, 393);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(310, 13);
@@ -273,7 +271,7 @@
             this.tb_path.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tb_path.BackColor = System.Drawing.SystemColors.Window;
-            this.tb_path.Location = new System.Drawing.Point(253, 319);
+            this.tb_path.Location = new System.Drawing.Point(253, 322);
             this.tb_path.Margin = new System.Windows.Forms.Padding(2);
             this.tb_path.Name = "tb_path";
             this.tb_path.Size = new System.Drawing.Size(593, 20);
@@ -284,7 +282,7 @@
             // bt_out_open
             // 
             this.bt_out_open.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.bt_out_open.Location = new System.Drawing.Point(850, 316);
+            this.bt_out_open.Location = new System.Drawing.Point(850, 319);
             this.bt_out_open.Margin = new System.Windows.Forms.Padding(2);
             this.bt_out_open.Name = "bt_out_open";
             this.bt_out_open.Size = new System.Drawing.Size(83, 24);
@@ -297,7 +295,7 @@
             // 
             this.picbox_save.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.picbox_save.InitialImage = global::ListOfMaterialsPGGA.Properties.Resources.uncheck;
-            this.picbox_save.Location = new System.Drawing.Point(909, 344);
+            this.picbox_save.Location = new System.Drawing.Point(909, 347);
             this.picbox_save.Margin = new System.Windows.Forms.Padding(2);
             this.picbox_save.Name = "picbox_save";
             this.picbox_save.Size = new System.Drawing.Size(24, 24);
@@ -346,35 +344,11 @@
             this.tb_template.TabIndex = 26;
             this.tb_template.Visible = false;
             // 
-            // label3
-            // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(248, 426);
-            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(282, 13);
-            this.label3.TabIndex = 28;
-            this.label3.Text = "Genera un Excel aparte con los componentes de repuesto";
-            // 
-            // button2
-            // 
-            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button2.Location = new System.Drawing.Point(88, 417);
-            this.button2.Margin = new System.Windows.Forms.Padding(2);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(156, 30);
-            this.button2.TabIndex = 27;
-            this.button2.Text = "Generar repuestos";
-            this.button2.UseVisualStyleBackColor = true;
-            // 
             // Generate
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(944, 480);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.button2);
+            this.ClientSize = new System.Drawing.Size(944, 444);
             this.Controls.Add(this.tb_template);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.pictureBox2);
@@ -437,7 +411,5 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.TextBox tb_template;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Button button2;
     }
 }

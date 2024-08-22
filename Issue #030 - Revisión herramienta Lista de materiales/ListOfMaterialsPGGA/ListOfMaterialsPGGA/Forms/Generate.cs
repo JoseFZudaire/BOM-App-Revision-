@@ -450,9 +450,9 @@ namespace ListOfMaterialsPGGA
                                     {
                                         sht_dup = true;
 
-                                        if (objxls.worksheet.Name == "BoMList")
+                                        if (wksht.Name == "BoMList")
                                         {
-                                            objxls.SelectSheet(tempname);
+                                            objxls.SelectSheet(tempname);                                      
                                         }
                                         else
                                         {
@@ -472,7 +472,10 @@ namespace ListOfMaterialsPGGA
 
                                         objxls.SelectSheet("Duplicate");
 
-                                        List<string> sheets = new List<string> { "Duplicate", wksht.Name };
+                                        List<string> sheets = null;
+
+                                        if (wksht.Name == "BoMList") { sheets = new List<string> { "Duplicate", tempname }; }
+                                        else { sheets = new List<string> { "Duplicate", wksht.Name }; }
 
                                         foreach (string sht in sheets)
                                         {
@@ -480,8 +483,14 @@ namespace ListOfMaterialsPGGA
 
                                             int n_quantity = 0;
 
+                                            MessageBox.Show("Type of sheet: " + sht);
+                                            MessageBox.Show("Objxls name: " + objxls.worksheet.Name);
+                                            MessageBox.Show("Cell (11,3) value: " + ((objxls.worksheet.Cells[3, 11] as Excel.Range).Text.ToString()));
+
                                             if (((objxls.worksheet.Cells[3, 11] as Excel.Range).Text.ToString()) == "QUANTITY") n_quantity = 11;
                                             else n_quantity = 8;
+
+                                            MessageBox.Show("N_Quantity of sheet: " + n_quantity);
 
                                             for (int i = 4; i < 60; i++)
                                             {
@@ -540,7 +549,8 @@ namespace ListOfMaterialsPGGA
                                                 objxls.worksheet.Cells[n_row, j] = descriptions[j - 2];
                                             }
 
-                                            objxls.worksheet.Cells[n_row, 11] = entry.Value.Item1; //pasting the value of the quantity
+                                            //MessageBox.Show("Value of entry Item 1: " + entry.Value.Item1);
+                                            objxls.worksheet.Cells[n_row, 11] = (entry.Value.Item1).ToString(); //pasting the value of the quantity
 
                                             if (entry.Value.Item2 == new_row_color)
                                             {
@@ -628,7 +638,7 @@ namespace ListOfMaterialsPGGA
 
                                             if (p != 3)
                                             {
-                                                if (!sht_dup)
+                                                if ((!sht_dup)&&(wksht.Name == "BoMList"))
                                                 { //copia las cantidades si es que no fue duplicado.
                                                     objxls.worksheet.Cells[p, 11] = objxls.worksheet.Cells[p, 8];
                                                     objxls.worksheet.Cells[p, 15] = objxls.worksheet.Cells[p, 12];
@@ -701,7 +711,7 @@ namespace ListOfMaterialsPGGA
                                         (objxls.worksheet.Cells[1, 6] as Excel.Range).EntireColumn.Delete(Excel.XlDeleteShiftDirection.xlShiftToLeft);
                                     }
 
-                                    break;
+                                    //break;
                                 }
                             }
                         }
