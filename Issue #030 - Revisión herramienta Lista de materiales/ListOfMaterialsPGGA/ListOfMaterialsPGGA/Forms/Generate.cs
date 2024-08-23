@@ -414,6 +414,7 @@ namespace ListOfMaterialsPGGA
             {
                 foreach (var item in this.dataGridView1.Rows)
                 {
+                    count++;
                     filedir = (string)((DataGridViewRow)item).Cells[1].Value;
                     objxls.bookmem = objxls.app.Workbooks.Open(filedir, 0, false, 5, "", "", true, Excel.XlPlatform.xlWindows, "\t", true, false, 0, true, 1, 0);
 
@@ -434,7 +435,7 @@ namespace ListOfMaterialsPGGA
                             Dictionary<string, Tuple<int, Int32>> dict_comp = new Dictionary<string, Tuple<int, Int32>>();
                             bool sht_dup = false;
 
-                            MessageBox.Show("Worksheet name: " + wksht.Name);
+                            //MessageBox.Show("Worksheet name: " + wksht.Name);
 
                             if ((wksht.Name != "Cover page") && (wksht.Name != "BoMListMechanical") && (wksht.Name != "CaratulaABB") && (wksht.Name != "Total")
                                 && (wksht.Name != "ComponentData") && (wksht.Name != "Referencia") && (wksht.Name != "Lista de Repuestos") && (wksht.Name != "Lista de Sueltos"))
@@ -442,7 +443,6 @@ namespace ListOfMaterialsPGGA
                                 objxls.sheetmem = wksht;
                                 if (objxls.sheetmem != null)
                                 {
-                                    count++;
                                     this.st_label.Text = "Copiando " + count + "/" + this.dataGridView1.RowCount + " ...";
                                     this.mensaje.Update();
 
@@ -483,14 +483,14 @@ namespace ListOfMaterialsPGGA
 
                                             int n_quantity = 0;
 
-                                            MessageBox.Show("Type of sheet: " + sht);
-                                            MessageBox.Show("Objxls name: " + objxls.worksheet.Name);
-                                            MessageBox.Show("Cell (11,3) value: " + ((objxls.worksheet.Cells[3, 11] as Excel.Range).Text.ToString()));
+                                            //MessageBox.Show("Type of sheet: " + sht);
+                                            //MessageBox.Show("Objxls name: " + objxls.worksheet.Name);
+                                            //MessageBox.Show("Cell (11,3) value: " + ((objxls.worksheet.Cells[3, 11] as Excel.Range).Text.ToString()));
 
                                             if (((objxls.worksheet.Cells[3, 11] as Excel.Range).Text.ToString()) == "QUANTITY") n_quantity = 11;
                                             else n_quantity = 8;
 
-                                            MessageBox.Show("N_Quantity of sheet: " + n_quantity);
+                                            //MessageBox.Show("N_Quantity of sheet: " + n_quantity);
 
                                             for (int i = 4; i < 60; i++)
                                             {
@@ -687,7 +687,7 @@ namespace ListOfMaterialsPGGA
                                     ((Range)objxls.worksheet.get_Range("A3:O44")).Cells.Borders[Excel.XlBordersIndex.xlEdgeBottom].Weight = 3d;
                                     ((Range)objxls.worksheet.get_Range("A3:O3")).Cells.Borders[Excel.XlBordersIndex.xlEdgeTop].Weight = 2d;
 
-                                    if (wksht.Name == "BoMList")
+                                    if ((wksht.Name == "BoMList")&&(count_rows > 3))
                                     {
                                         objxls.worksheet.get_Range(objxls.worksheet.Cells[4, 12], objxls.worksheet.Cells[count_rows, 14]).Font.Bold = true;
                                         objxls.worksheet.get_Range(objxls.worksheet.Cells[4, 12], objxls.worksheet.Cells[count_rows, 14]).Font.Size = 14;
@@ -739,7 +739,8 @@ namespace ListOfMaterialsPGGA
                 objxls.SelectSheet("Total");
                 this.st_label.Text = "Plantilla de proyecto generada";
                 this.mensaje.Update();
-                MessageBox.Show(this.st_label.Text);
+                MessageBox.Show(this.st_label.Text, "Generación de BOM", System.Windows.Forms.MessageBoxButtons.OK,
+                    System.Windows.Forms.MessageBoxIcon.Information);
             }
             catch
             {
@@ -1096,7 +1097,7 @@ namespace ListOfMaterialsPGGA
             //MessageBox.Show("Route is: " + route.Split(new string[] { "bin" }, StringSplitOptions.None)[0] + "Empty_BillOfMaterial.xlsm");
 
             //string excelfilepath = route.Split(new string[] { "bin" }, StringSplitOptions.None)[0] + @"\" + "Empty_BillOfMaterial.xlsm";
-            string excelfilepath = route.Split(new string[] { "bin" }, StringSplitOptions.None)[0] + "Empty_BillOfMaterial.xlsm";
+            string excelfilepath = route.Split(new string[] { "bin" }, StringSplitOptions.None)[0] + "/bin/Release/Empty_BillOfMaterial.xlsm";
 
             this.Hide();
             var formAddShts = new AddAdditionalShts();
